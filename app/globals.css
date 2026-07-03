@@ -5,6 +5,7 @@
   --bg-deep: #070f0b;
   --bg-panel: #0d1a13;
   --bg-panel-raised: #112318;
+  --bg-chassis: #16281e;
   --bg-canvas: #081410;
 
   --phosphor: #33ff99;
@@ -92,6 +93,13 @@ main {
   }
 }
 
+@media (min-width: 1024px) {
+  main {
+    max-width: 980px;
+    padding: 36px 32px 72px;
+  }
+}
+
 header.app-header {
   text-align: center;
   padding: 20px 16px 16px;
@@ -107,18 +115,27 @@ header.app-header {
   }
 }
 
+@media (min-width: 1024px) {
+  header.app-header {
+    max-width: 980px;
+  }
+}
+
 header.app-header h1 {
   font-size: 1.4rem;
   margin: 0 0 4px;
   color: var(--phosphor-bright);
   text-shadow: 0 0 12px var(--phosphor-glow-soft);
   letter-spacing: 0.3px;
+  text-wrap: balance;
 }
 
 header.app-header p {
-  margin: 0;
+  margin: 0 auto;
+  max-width: 42ch;
   color: var(--ink-dim);
   font-size: 0.85rem;
+  text-wrap: pretty;
 }
 
 .nav-buttons {
@@ -177,6 +194,11 @@ footer.app-footer {
   line-height: 1;
 }
 
+.privacy-banner span:last-child {
+  max-width: 56ch;
+  text-wrap: pretty;
+}
+
 /* --- mode tabs --- */
 
 .mode-tabs {
@@ -218,21 +240,57 @@ footer.app-footer {
   gap: 18px;
 }
 
-.stage {
+/* --- instrument chassis: the one surface that reads as a distinct device
+   panel sitting on top of the page's CRT grid --- */
+
+.instrument-chassis {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--bg-chassis);
+  border: 1px solid var(--border-etched);
+  border-radius: 18px;
+  padding: 18px 16px;
+  box-shadow:
+    inset 0 1px 0 var(--border-etched-light),
+    inset 0 0 32px rgba(0, 0, 0, 0.4),
+    0 14px 36px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 1024px) {
+  .instrument-chassis .mode-tabs {
+    max-width: 420px;
+  }
+}
+
+.instrument-chassis-theremin {
+  border-color: rgba(255, 178, 0, 0.28);
+  box-shadow:
+    inset 0 1px 0 var(--border-etched-light),
+    inset 0 0 32px rgba(0, 0, 0, 0.4),
+    0 0 26px var(--amber-glow-soft);
+}
+
+.stage-grid {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-etched);
-  border-radius: 14px;
-  padding: 22px 16px 18px;
-  box-shadow: inset 0 1px 0 var(--border-etched-light), 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
-.stage-theremin {
-  border-color: rgba(255, 178, 0, 0.28);
-  box-shadow: inset 0 1px 0 var(--border-etched-light), 0 0 24px var(--amber-glow-soft);
+.stage-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.stage-display {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
 }
 
 .stage-status {
@@ -240,10 +298,35 @@ footer.app-footer {
   color: var(--ink-dim);
   text-align: center;
   min-height: 1.4em;
+  max-width: 40ch;
+  text-wrap: pretty;
 }
 
 .stage-status-warn {
   color: var(--amber-bright);
+}
+
+@media (min-width: 1024px) {
+  .instrument-chassis {
+    padding: 28px 28px 32px;
+    border-radius: 22px;
+  }
+
+  .stage-grid {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 32px;
+  }
+
+  .stage-controls {
+    flex: 0 0 240px;
+    padding-top: 4px;
+  }
+
+  .stage-display {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .listen-button {
@@ -374,6 +457,24 @@ footer.app-footer {
   text-align: center;
 }
 
+.results-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .results-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .results-row .result-card {
+    flex: 1 1 220px;
+  }
+}
+
 .result-card {
   background-color: var(--bg-panel);
   background-image: radial-gradient(var(--phosphor-glow-soft) 1px, transparent 1px);
@@ -384,6 +485,7 @@ footer.app-footer {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
 }
 
 .result-card-rank1 {
@@ -401,6 +503,7 @@ footer.app-footer {
 .result-card-name {
   font-weight: 700;
   font-size: 1rem;
+  text-wrap: pretty;
 }
 
 .result-card-rank {
@@ -425,6 +528,7 @@ footer.app-footer {
   border: 1px solid var(--border-etched);
   border-radius: 3px;
   overflow: hidden;
+  margin-top: auto;
 }
 
 .confidence-bar-fill {
@@ -448,15 +552,27 @@ footer.app-footer {
   font-size: 0.82rem;
   color: var(--amber-bright);
   opacity: 0.85;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 40ch;
+  text-wrap: pretty;
 }
 
 /* --- method page --- */
+
+.method-content {
+  max-width: 68ch;
+  margin: 0 auto;
+}
 
 .method-content h2 {
   font-size: 1.05rem;
   margin-top: 28px;
   color: var(--phosphor-bright);
+  text-wrap: balance;
+}
+
+.method-content p {
+  text-wrap: pretty;
 }
 
 .method-content ul {
@@ -473,6 +589,10 @@ footer.app-footer {
   gap: 8px;
   padding-left: 18px;
   font-size: 0.88rem;
+}
+
+.tune-list li {
+  text-wrap: pretty;
 }
 
 @media (max-width: 360px) {

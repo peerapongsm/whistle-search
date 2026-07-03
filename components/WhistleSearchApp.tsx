@@ -166,90 +166,107 @@ export default function WhistleSearchApp() {
         <span>เสียงทั้งหมดประมวลผล “ในเบราว์เซอร์คุณ” เท่านั้น ไม่มีการอัดเสียง ไม่มีการส่งไฟล์เสียงไปเซิร์ฟเวอร์ไหนเลย</span>
       </div>
 
-      <div className="mode-tabs" role="group" aria-label="เลือกโหมด">
-        <button type="button" aria-pressed={mode === "guess"} onClick={() => handleSwitchMode("guess")}>
-          🎯 ทายเพลง
-        </button>
-        <button type="button" aria-pressed={mode === "theremin"} onClick={() => handleSwitchMode("theremin")}>
-          🎵 Theremin
-        </button>
-      </div>
+      <div className={`instrument-chassis ${mode === "theremin" ? "instrument-chassis-theremin" : ""}`}>
+        <div className="mode-tabs" role="group" aria-label="เลือกโหมด">
+          <button type="button" aria-pressed={mode === "guess"} onClick={() => handleSwitchMode("guess")}>
+            🎯 ทายเพลง
+          </button>
+          <button type="button" aria-pressed={mode === "theremin"} onClick={() => handleSwitchMode("theremin")}>
+            🎵 Theremin
+          </button>
+        </div>
 
-      {mode === "guess" && (
-        <>
-          <div className="stage">
-            <p className={`stage-status ${guessStatus === "denied" ? "stage-status-warn" : ""}`}>
-              {guessStatus === "idle" && "กดปุ่มแล้วผิวปากทำนองเพลงประมาณ 7 วินาที เดี๋ยวเว็บจะทายให้ว่าเพลงอะไร"}
-              {guessStatus === "requesting" && "กำลังขอสิทธิ์ใช้ไมโครโฟน..."}
-              {guessStatus === "listening" && "ฟังอยู่! ผิวปากต่อไปเรื่อยๆ..."}
-              {guessStatus === "demo-playing" && `กำลังเล่นตัวอย่าง (${DEMO_TUNE_NAME})...`}
-              {guessStatus === "denied" && "ไม่ได้รับสิทธิ์ใช้ไมโครโฟน ลองโหมดสาธิตด้านล่างแทนได้"}
-              {guessStatus === "done" && "ทายเสร็จแล้ว! ผลอยู่ด้านล่าง"}
-            </p>
+        <div className="stage-grid">
+          <div className="stage-controls">
+            {mode === "guess" && (
+              <>
+                <p className={`stage-status ${guessStatus === "denied" ? "stage-status-warn" : ""}`}>
+                  {guessStatus === "idle" && "กดปุ่มแล้วผิวปากทำนองเพลงประมาณ 7 วินาที เดี๋ยวเว็บจะทายให้ว่าเพลงอะไร"}
+                  {guessStatus === "requesting" && "กำลังขอสิทธิ์ใช้ไมโครโฟน..."}
+                  {guessStatus === "listening" && "ฟังอยู่! ผิวปากต่อไปเรื่อยๆ..."}
+                  {guessStatus === "demo-playing" && `กำลังเล่นตัวอย่าง (${DEMO_TUNE_NAME})...`}
+                  {guessStatus === "denied" && "ไม่ได้รับสิทธิ์ใช้ไมโครโฟน ลองโหมดสาธิตด้านล่างแทนได้"}
+                  {guessStatus === "done" && "ทายเสร็จแล้ว! ผลอยู่ด้านล่าง"}
+                </p>
 
-            <button
-              type="button"
-              className={`listen-button ${guessStatus === "listening" || guessStatus === "demo-playing" ? "listen-button-active" : ""}`}
-              onClick={handleStartGuess}
-              disabled={guessStatus === "requesting" || guessStatus === "listening" || guessStatus === "demo-playing"}
-            >
-              {guessStatus === "listening" ? "🎙️ กำลังฟัง..." : "🎙️ เริ่มผิวปาก"}
-            </button>
+                <button
+                  type="button"
+                  className={`listen-button ${guessStatus === "listening" || guessStatus === "demo-playing" ? "listen-button-active" : ""}`}
+                  onClick={handleStartGuess}
+                  disabled={guessStatus === "requesting" || guessStatus === "listening" || guessStatus === "demo-playing"}
+                >
+                  {guessStatus === "listening" ? "🎙️ กำลังฟัง..." : "🎙️ เริ่มผิวปาก"}
+                </button>
 
-            {(guessStatus === "listening" || guessStatus === "demo-playing") && (
-              <div className="recording-progress">
-                <div className="recording-progress-fill" style={{ width: `${Math.round(recordProgress * 100)}%` }} />
-              </div>
+                {(guessStatus === "listening" || guessStatus === "demo-playing") && (
+                  <div className="recording-progress">
+                    <div className="recording-progress-fill" style={{ width: `${Math.round(recordProgress * 100)}%` }} />
+                  </div>
+                )}
+              </>
             )}
 
-            <PitchTraceCanvas history={guessHistory} />
+            {mode === "theremin" && (
+              <>
+                <p className={`stage-status ${thereminStatus === "denied" ? "stage-status-warn" : ""}`}>
+                  {thereminStatus === "idle" && "ผิวปากคุมเสียง synth แบบสดๆ เหมือนเล่น theremin — ของเล่นเฉยๆ"}
+                  {thereminStatus === "requesting" && "กำลังขอสิทธิ์ใช้ไมโครโฟน..."}
+                  {thereminStatus === "playing" && "ผิวปากคุมเสียงได้เลย!"}
+                  {thereminStatus === "denied" && "ไม่ได้รับสิทธิ์ใช้ไมโครโฟน โหมดนี้ต้องใช้ไมค์เท่านั้น"}
+                </p>
 
-            <p className="demo-hint">
-              ไม่มีไมค์ หรือไม่อยากเปิด?{" "}
-              <button type="button" onClick={handleStartDemo} disabled={guessStatus === "listening" || guessStatus === "demo-playing"}>
-                ลองโหมดสาธิต
-              </button>
-            </p>
+                <button
+                  type="button"
+                  className={`listen-button listen-button-theremin ${thereminStatus === "playing" ? "listen-button-active" : ""}`}
+                  onClick={handleToggleTheremin}
+                  disabled={thereminStatus === "requesting"}
+                >
+                  {thereminStatus === "playing" ? "⏹️ หยุด" : "🎵 เริ่มเป่า"}
+                </button>
+              </>
+            )}
           </div>
 
-          {results && (
-            <div className="results">
-              {results.length === 0 ? (
-                <p className="results-heading">ฟังไม่ชัดเลย ลองผิวปากให้ดังและชัดกว่านี้อีกทีนะ 🎐</p>
-              ) : (
-                <>
-                  <p className="results-heading">ทายว่าเป็นเพลงนี้ (เรียงตามความมั่นใจ)</p>
-                  {results.map((r, i) => (
-                    <ResultCard key={r.id} rank={i + 1} name={r.name} confidence={r.confidence} />
-                  ))}
-                  <p className="result-joke">ทายผิดก็ไม่เป็นไร นั่นแหละคือความสนุก 😄</p>
-                </>
-              )}
-            </div>
-          )}
-        </>
-      )}
+          <div className="stage-display">
+            <PitchTraceCanvas history={mode === "guess" ? guessHistory : thereminHistory} />
 
-      {mode === "theremin" && (
-        <div className="stage stage-theremin">
-          <p className={`stage-status ${thereminStatus === "denied" ? "stage-status-warn" : ""}`}>
-            {thereminStatus === "idle" && "ผิวปากคุมเสียง synth แบบสดๆ เหมือนเล่น theremin — ของเล่นเฉยๆ"}
-            {thereminStatus === "requesting" && "กำลังขอสิทธิ์ใช้ไมโครโฟน..."}
-            {thereminStatus === "playing" && "ผิวปากคุมเสียงได้เลย!"}
-            {thereminStatus === "denied" && "ไม่ได้รับสิทธิ์ใช้ไมโครโฟน โหมดนี้ต้องใช้ไมค์เท่านั้น"}
-          </p>
-          <button
-            type="button"
-            className={`listen-button listen-button-theremin ${thereminStatus === "playing" ? "listen-button-active" : ""}`}
-            onClick={handleToggleTheremin}
-            disabled={thereminStatus === "requesting"}
-          >
-            {thereminStatus === "playing" ? "⏹️ หยุด" : "🎵 เริ่มเป่า"}
-          </button>
-          <PitchTraceCanvas history={thereminHistory} />
-          <p className="theremin-hint">เสียง synth สังเคราะห์สดในเครื่องคุณ ไม่มีการอัดหรือบันทึกเช่นกัน</p>
+            {mode === "guess" && (
+              <>
+                <p className="demo-hint">
+                  ไม่มีไมค์ หรือไม่อยากเปิด?{" "}
+                  <button
+                    type="button"
+                    onClick={handleStartDemo}
+                    disabled={guessStatus === "listening" || guessStatus === "demo-playing"}
+                  >
+                    ลองโหมดสาธิต
+                  </button>
+                </p>
+
+                {results && (
+                  <div className="results">
+                    {results.length === 0 ? (
+                      <p className="results-heading">ฟังไม่ชัดเลย ลองผิวปากให้ดังและชัดกว่านี้อีกทีนะ 🎐</p>
+                    ) : (
+                      <>
+                        <p className="results-heading">ทายว่าเป็นเพลงนี้ (เรียงตามความมั่นใจ)</p>
+                        <div className="results-row">
+                          {results.map((r, i) => (
+                            <ResultCard key={r.id} rank={i + 1} name={r.name} confidence={r.confidence} />
+                          ))}
+                        </div>
+                        <p className="result-joke">ทายผิดก็ไม่เป็นไร นั่นแหละคือความสนุก 😄</p>
+                      </>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+
+            {mode === "theremin" && <p className="theremin-hint">เสียง synth สังเคราะห์สดในเครื่องคุณ ไม่มีการอัดหรือบันทึกเช่นกัน</p>}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
