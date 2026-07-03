@@ -11,7 +11,7 @@ export default function ResultCard({ rank, name, confidence }: ResultCardProps) 
     <div className={`result-card ${rank === 1 ? "result-card-rank1" : ""}`}>
       <div className="result-card-top">
         <span className="result-card-name">
-          {rank}. {name}
+          <span className="result-card-rank">{rank.toString().padStart(2, "0")}</span> {name}
         </span>
         <span className="result-card-confidence">{percent}%</span>
       </div>

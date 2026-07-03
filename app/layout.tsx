@@ -1,5 +1,20 @@
 import type { Metadata } from "next";
+import { Space_Mono, Bai_Jamjuree } from "next/font/google";
 import "./globals.css";
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+const baiJamjuree = Bai_Jamjuree({
+  subsets: ["thai", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-thai",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "ผิวปาก Search",
@@ -8,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="th">
+    <html lang="th" className={`${spaceMono.variable} ${baiJamjuree.variable}`}>
       <head>
         <script
           defer

@@ -178,7 +178,7 @@ export default function WhistleSearchApp() {
       {mode === "guess" && (
         <>
           <div className="stage">
-            <p className="stage-status">
+            <p className={`stage-status ${guessStatus === "denied" ? "stage-status-warn" : ""}`}>
               {guessStatus === "idle" && "กดปุ่มแล้วผิวปากทำนองเพลงประมาณ 7 วินาที เดี๋ยวเว็บจะทายให้ว่าเพลงอะไร"}
               {guessStatus === "requesting" && "กำลังขอสิทธิ์ใช้ไมโครโฟน..."}
               {guessStatus === "listening" && "ฟังอยู่! ผิวปากต่อไปเรื่อยๆ..."}
@@ -189,7 +189,7 @@ export default function WhistleSearchApp() {
 
             <button
               type="button"
-              className={`listen-button ${guessStatus === "listening" ? "listen-button-active" : ""}`}
+              className={`listen-button ${guessStatus === "listening" || guessStatus === "demo-playing" ? "listen-button-active" : ""}`}
               onClick={handleStartGuess}
               disabled={guessStatus === "requesting" || guessStatus === "listening" || guessStatus === "demo-playing"}
             >
@@ -231,8 +231,8 @@ export default function WhistleSearchApp() {
       )}
 
       {mode === "theremin" && (
-        <div className="stage">
-          <p className="stage-status">
+        <div className="stage stage-theremin">
+          <p className={`stage-status ${thereminStatus === "denied" ? "stage-status-warn" : ""}`}>
             {thereminStatus === "idle" && "ผิวปากคุมเสียง synth แบบสดๆ เหมือนเล่น theremin — ของเล่นเฉยๆ"}
             {thereminStatus === "requesting" && "กำลังขอสิทธิ์ใช้ไมโครโฟน..."}
             {thereminStatus === "playing" && "ผิวปากคุมเสียงได้เลย!"}
@@ -240,7 +240,7 @@ export default function WhistleSearchApp() {
           </p>
           <button
             type="button"
-            className={`listen-button ${thereminStatus === "playing" ? "listen-button-active" : ""}`}
+            className={`listen-button listen-button-theremin ${thereminStatus === "playing" ? "listen-button-active" : ""}`}
             onClick={handleToggleTheremin}
             disabled={thereminStatus === "requesting"}
           >

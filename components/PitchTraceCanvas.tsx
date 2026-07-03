@@ -21,9 +21,19 @@ export default function PitchTraceCanvas({ history, minHz = 500, maxHz = 3000 }:
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    ctx.strokeStyle = "rgba(255,255,255,0.08)";
+    if (reduceMotion) {
+      // No phosphor persistence trail: hard-clear each frame, trace only.
+      ctx.fillStyle = "#081410";
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    } else {
+      // Cheap alpha fade over the previous frame's pixels = phosphor persistence trail.
+      ctx.fillStyle = "rgba(6, 14, 11, 0.32)";
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
+
+    ctx.strokeStyle = "rgba(51, 255, 153, 0.12)";
     ctx.lineWidth = 1;
     for (let i = 0; i <= 4; i++) {
       const y = (CANVAS_HEIGHT / 4) * i;
@@ -32,13 +42,24 @@ export default function PitchTraceCanvas({ history, minHz = 500, maxHz = 3000 }:
       ctx.lineTo(CANVAS_WIDTH, y);
       ctx.stroke();
     }
+    for (let i = 0; i <= 8; i++) {
+      const x = (CANVAS_WIDTH / 8) * i;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, CANVAS_HEIGHT);
+      ctx.stroke();
+    }
 
     if (history.length < 2) return;
 
-    ctx.strokeStyle = "#7cd6ff";
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#33ff99";
+    ctx.lineWidth = 2.5;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
+    if (!reduceMotion) {
+      ctx.shadowColor = "rgba(51, 255, 153, 0.9)";
+      ctx.shadowBlur = 8;
+    }
     ctx.beginPath();
     let penDown = false;
     history.forEach((hz, i) => {
@@ -57,6 +78,7 @@ export default function PitchTraceCanvas({ history, minHz = 500, maxHz = 3000 }:
       }
     });
     ctx.stroke();
+    ctx.shadowBlur = 0;
   }, [history, minHz, maxHz]);
 
   return (
